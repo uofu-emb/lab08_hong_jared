@@ -2,17 +2,39 @@
 #include <hardware/regs/intctrl.h>
 #include <stdio.h>
 #include <pico/stdlib.h>
+#include <FreeRTOS.h>
+#include <task.h>
+#include <queue.h>
 
 static struct can2040 cbus;
+QueueHandle_t msgs;
 
 int main (void) 
 {
+    stdio_init_all();
+    const char *rtos_name;
+    rtos_name = "FreeRTOS";
+    TaskHandle_t master;
+    // sleep_ms(10000);
+    // printf("made it after sleep\n");
+    hard_assert(cyw43_arch_init() == PICO_OK);
+
+    xTaskCreate(master, "Master", configMINIMAL_STACK_SIZE, NULL,
+        tskIDLE_PRIORITY + 2UL, &master_task);
+    vTaskStartScheduler();
+
     return 0;
+}
+
+void master_task(void *args) {
+    struct can2040_msg msg;
+    xQueueReceive(msgs, &msg, portMAX_DELAY);
+    printf("got the message\n");
 }
 
 static void can2040_cb(struct can2040 *cd, uint32_t notify, struct can2040_msg *msg)
 {
-    // Put your code here....
+    xQueueSendToBack(msgs, msg, portMAX_DELAY);
 }
 
 static void PIOx_IRQHandler(void)
