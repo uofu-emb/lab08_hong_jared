@@ -9,23 +9,6 @@
 static struct can2040 cbus;
 QueueHandle_t msgs;
 
-int main (void) 
-{
-    stdio_init_all();
-    const char *rtos_name;
-    rtos_name = "FreeRTOS";
-    TaskHandle_t master;
-    // sleep_ms(10000);
-    // printf("made it after sleep\n");
-    hard_assert(cyw43_arch_init() == PICO_OK);
-
-    xTaskCreate(master, "Master", configMINIMAL_STACK_SIZE, NULL,
-        tskIDLE_PRIORITY + 2UL, &master_task);
-    vTaskStartScheduler();
-
-    return 0;
-}
-
 void master_task(void *args) {
     struct can2040_msg msg;
     xQueueReceive(msgs, &msg, portMAX_DELAY);
@@ -59,4 +42,21 @@ void canbus_setup(void)
 
     // Start canbus
     can2040_start(&cbus, sys_clock, bitrate, gpio_rx, gpio_tx);
+}
+
+int main (void) 
+{
+    stdio_init_all();
+    const char *rtos_name;
+    rtos_name = "FreeRTOS";
+    TaskHandle_t master;
+    // sleep_ms(10000);
+    // printf("made it after sleep\n");
+    hard_assert(cyw43_arch_init() == PICO_OK);
+
+    xTaskCreate(master, "Master", configMINIMAL_STACK_SIZE, NULL,
+        tskIDLE_PRIORITY + 2UL, &master_task);
+    vTaskStartScheduler();
+
+    return 0;
 }
