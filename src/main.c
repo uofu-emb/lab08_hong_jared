@@ -50,8 +50,8 @@ int main (void)
     const char *rtos_name;
     rtos_name = "FreeRTOS";
     TaskHandle_t master;
-    // sleep_ms(10000);
-    // printf("made it after sleep\n");
+    msgs = xQueueCreate(100, sizeof(struct can2040_msg));
+    canbus_setup();
     hard_assert(cyw43_arch_init() == PICO_OK);
 
     xTaskCreate(master, "Master", configMINIMAL_STACK_SIZE, NULL,
