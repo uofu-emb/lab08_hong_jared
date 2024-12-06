@@ -6,13 +6,21 @@
 #include <task.h>
 #include <queue.h>
 
+#define MASTER_TASK_PRIORITY (tskIDLE_PRIORITY + 1UL)
+
 static struct can2040 cbus;
 QueueHandle_t msgs;
 
 void master_task(void *args) {
     struct can2040_msg msg;
+    printf("made it into master task\n");
     xQueueReceive(msgs, &msg, portMAX_DELAY);
-    printf("got the message\n");
+    printf("Got message\n");
+    // while(1) {
+    //     printf("got the message\n");
+    //     vTaskDelay(3000);
+    // }
+
 }
 
 static void can2040_cb(struct can2040 *cd, uint32_t notify, struct can2040_msg *msg)
@@ -50,12 +58,18 @@ int main (void)
     const char *rtos_name;
     rtos_name = "FreeRTOS";
     TaskHandle_t master;
+    sleep_ms(10000);
+    printf("made it after sleep\n");
+
     msgs = xQueueCreate(100, sizeof(struct can2040_msg));
     canbus_setup();
-    hard_assert(cyw43_arch_init() == PICO_OK);
+    //printf("can bus setup\n");
 
-    xTaskCreate(master, "Master", configMINIMAL_STACK_SIZE, NULL,
-        tskIDLE_PRIORITY + 2UL, &master_task);
+    //hard_assert(cyw43_arch_init() == PICO_OK);
+    //printf("hard assert passed\n");
+
+    xTaskCreate(master_task, "Master", configMINIMAL_STACK_SIZE, NULL,
+        MASTER_TASK_PRIORITY, &master);
     vTaskStartScheduler();
 
     return 0;
