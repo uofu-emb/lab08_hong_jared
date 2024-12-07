@@ -39,6 +39,7 @@
     "raspberry-pi-pico.python3Path": "python3",
     "files.associations": {
         "stdlib.h": "c",
-        "intctrl.h": "c"
+        "intctrl.h": "c",
+        "stdio.h": "c"
     }
 }
