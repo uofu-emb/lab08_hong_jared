@@ -40,6 +40,8 @@
     "files.associations": {
         "stdlib.h": "c",
         "intctrl.h": "c",
-        "stdio.h": "c"
+        "stdio.h": "c",
+        "freertos.h": "c",
+        "queue.h": "c"
     }
 }

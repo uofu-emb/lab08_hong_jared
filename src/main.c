@@ -1,10 +1,10 @@
-#include <can2040.h>
-#include <hardware/regs/intctrl.h>
 #include <stdio.h>
 #include <pico/stdlib.h>
 #include <FreeRTOS.h>
 #include <task.h>
 #include <queue.h>
+#include <can2040.h>
+#include <hardware/regs/intctrl.h>
 #include "rxtx.h"
 
 // This struct is used by the can2040 libraries and must be included to communicate with
@@ -39,6 +39,7 @@ void canbus_setup(void) {
 }
 
 void master_task(void *args) {
+    int test = 5;
     struct can2040_msg msg;
     TaskHandle_t rx, tx;
     msg_q = xQueueCreate(100, sizeof(struct can2040_msg));
@@ -46,7 +47,7 @@ void master_task(void *args) {
     printf("canbus setup complete\n");
 
     // Create both transmit and receive tasks
-    xTaskCreate(rx_task, "rx_task", configMINIMAL_STACK_SIZE, NULL,
+    xTaskCreate(rx_task, "rx_task", configMINIMAL_STACK_SIZE, &test,
         WORKER_TASK_PRIORITY, &rx);
     xTaskCreate(tx_task, "tx_task", configMINIMAL_STACK_SIZE, NULL,
         WORKER_TASK_PRIORITY, &tx);
