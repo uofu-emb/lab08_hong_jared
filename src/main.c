@@ -15,6 +15,7 @@ QueueHandle_t msg_q;
 static void can2040_cb(struct can2040 *cd, uint32_t notify, struct can2040_msg *msg) {
     // If the message is a transmitted, nothing needs to be done, so we return.
     if (notify == CAN2040_NOTIFY_TX) {
+        printf("tx notify!\n");
         return;
     }
     // Else if it's a recieved message add it to the queue to be processed.
