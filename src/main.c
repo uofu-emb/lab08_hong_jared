@@ -14,6 +14,7 @@ QueueHandle_t msg_q;
 
 static void can2040_cb(struct can2040 *cd, uint32_t notify, struct can2040_msg *msg) {
     // If the message is a transmitted, nothing needs to be done, so we return.
+    printf("got inside irq\n");
     if (notify == CAN2040_NOTIFY_TX) {
         printf("tx notify!\n");
         return;
@@ -65,7 +66,7 @@ void master_task(void *args) {
     for (int i = 0; i < 30; i++) {
         // Get msg ready to sent ready
         msg.id = i;
-        msg.dlc = 0;
+        msg.dlc = 1;
         uint8_t input = i;
         msg.data[0] = i;
 
