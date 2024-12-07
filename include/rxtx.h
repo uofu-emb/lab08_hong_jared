@@ -6,4 +6,3 @@ typedef struct task_args {
 } task_args;
 
 void rx_task(QueueHandle_t *msg_q);
-void tx_task(QueueHandle_t *args);

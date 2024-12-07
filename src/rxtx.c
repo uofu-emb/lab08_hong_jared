@@ -2,22 +2,18 @@
 #include <pico/stdlib.h>
 #include <FreeRTOS.h>
 #include <task.h>
+#include <queue.h>
 #include <can2040.h>
 #include <hardware/regs/intctrl.h>
 #include "rxtx.h"
 
-void rx_task(int *args) {
+void rx_task(QueueHandle_t *msg_q) {
+    struct can2040_msg msg;
+    char c;
     while(1) {
-        printf("running rx_task\n");
-        //int *test = (int *)args; 
-        printf("%d\n", *args);
-        vTaskDelay(3000);
-    }
-}
-
-void tx_task(void *args) {
-    while(1) {
-        printf("running tx_task\n");
-        vTaskDelay(3000);
+        printf("Worker task waiting for message\n");
+        xQueueReceive(*msg_q, &msg, portMAX_DELAY);
+        c = msg.data[0];
+        printf("message is: %c\n", c);
     }
 }

@@ -59,9 +59,8 @@ void master_task(void *args) {
     // Create both transmit and receive tasks
     xTaskCreate(rx_task, "rx_task", configMINIMAL_STACK_SIZE, &msg_q,
         WORKER_TASK_PRIORITY, &rx);
-    // xTaskCreate(tx_task, "tx_task", configMINIMAL_STACK_SIZE, NULL,
-    //     WORKER_TASK_PRIORITY, &tx);
 
+    // This part of code will send messages. The reciever should have this for loop commented out.
     for (int i = 0; i < 30; i++) {
         // Get msg ready to sent ready
         msg.id = i;
