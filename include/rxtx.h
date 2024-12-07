@@ -5,5 +5,5 @@ typedef struct task_args {
     struct can2040 *cd;   
 } task_args;
 
-void rx_task(int *args);
-void tx_task(void *args);
+void rx_task(QueueHandle_t *msg_q);
+void tx_task(QueueHandle_t *args);

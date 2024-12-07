@@ -13,7 +13,17 @@ static struct can2040 cbus;
 QueueHandle_t msg_q;
 
 static void can2040_cb(struct can2040 *cd, uint32_t notify, struct can2040_msg *msg) {
-    xQueueSendToBack(msg_q, msg, portMAX_DELAY);
+    // If the message is a transmitted, nothing needs to be done, so we return.
+    if (notify == CAN2040_NOTIFY_TX) {
+        return;
+    }
+    // Else if it's a recieved message add it to the queue to be processed.
+    else if (notify == CAN2040_NOTIFY_RX) {
+        xQueueSendToBack(msg_q, msg, portMAX_DELAY);
+    }
+    else {
+        printf("Can error\n");
+    }
 }
 
 static void PIOx_IRQHandler(void) {
@@ -39,18 +49,42 @@ void canbus_setup(void) {
 }
 
 void master_task(void *args) {
-    int test = 5;
     struct can2040_msg msg;
     TaskHandle_t rx, tx;
+    int result;
     msg_q = xQueueCreate(100, sizeof(struct can2040_msg));
     canbus_setup();
     printf("canbus setup complete\n");
 
     // Create both transmit and receive tasks
-    xTaskCreate(rx_task, "rx_task", configMINIMAL_STACK_SIZE, &test,
+    xTaskCreate(rx_task, "rx_task", configMINIMAL_STACK_SIZE, &msg_q,
         WORKER_TASK_PRIORITY, &rx);
-    xTaskCreate(tx_task, "tx_task", configMINIMAL_STACK_SIZE, NULL,
-        WORKER_TASK_PRIORITY, &tx);
+    // xTaskCreate(tx_task, "tx_task", configMINIMAL_STACK_SIZE, NULL,
+    //     WORKER_TASK_PRIORITY, &tx);
+
+    for (int i = 0; i < 30; i++) {
+        // Get msg ready to sent ready
+        msg.id = i;
+        msg.dlc = 1;
+        char input = 'A';
+        input = input + i;
+        msg.data[0] = &input;
+
+        printf("before check transmit\n");
+        while (!can2040_check_transmit(&cbus)) {
+            vTaskDelay(3000);
+        }
+
+        printf("transmission line ready\n");
+        result = can2040_transmit(&cbus, &msg);
+
+        if (result == 0) {
+            printf("message transmitted\n");
+        }
+        else {
+            printf("message not transmitted\n");
+        }
+    }
 
     // Infinite loop
     while (1) {}
