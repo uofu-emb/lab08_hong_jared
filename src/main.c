@@ -60,14 +60,16 @@ void master_task(void *args) {
     xTaskCreate(rx_task, "rx_task", configMINIMAL_STACK_SIZE, &msg_q,
         WORKER_TASK_PRIORITY, &rx);
 
+    printf("waiting for worker to be ready\n");
+    vTaskDelay(3000);
+
     // This part of code will send messages. The reciever should have this for loop commented out.
     for (int i = 0; i < 30; i++) {
         // Get msg ready to sent ready
         msg.id = i;
         msg.dlc = 1;
-        char input = 'A';
-        input = input + i;
-        msg.data[0] = &input;
+        uint8_t input = i;
+        msg.data[0] = i;
 
         printf("before check transmit\n");
         while (!can2040_check_transmit(&cbus)) {

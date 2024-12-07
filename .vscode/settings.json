@@ -42,6 +42,7 @@
         "intctrl.h": "c",
         "stdio.h": "c",
         "freertos.h": "c",
-        "queue.h": "c"
+        "queue.h": "c",
+        "random": "c"
     }
 }

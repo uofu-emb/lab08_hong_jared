@@ -9,11 +9,11 @@
 
 void rx_task(QueueHandle_t *msg_q) {
     struct can2040_msg msg;
-    char c;
+    uint8_t test;
     while(1) {
         printf("Worker task waiting for message\n");
         xQueueReceive(*msg_q, &msg, portMAX_DELAY);
-        c = msg.data[0];
-        printf("message is: %c\n", c);
+        test = msg.data[0];
+        printf("message is: %d\n", test);
     }
 }
