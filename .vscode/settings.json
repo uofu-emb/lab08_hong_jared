@@ -38,6 +38,11 @@
     "raspberry-pi-pico.ninjaPath": "${HOME}/.pico-sdk/ninja/v1.12.1/ninja",
     "raspberry-pi-pico.python3Path": "python3",
     "files.associations": {
-        "stdlib.h": "c"
+        "stdlib.h": "c",
+        "intctrl.h": "c",
+        "stdio.h": "c",
+        "freertos.h": "c",
+        "queue.h": "c",
+        "random": "c"
     }
 }
